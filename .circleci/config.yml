@@ -1,0 +1,28 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: docker:edge-git
+        environment:
+          PROJECT_NAME: try-deploy-container
+    working_directory: /builder
+    branches:
+      only:
+        - deploy/production
+        - deploy/staging
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build -t build:${CIRCLE_SHA1} -f docker/Dockerfile.release .
+      - deploy:
+          name: Push application Docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "deploy/staging" ]; then
+              docker login --username=${HEROKU_USER} --password=${HEROKU_API_KEY} registry.heroku.com
+              docker tag build:${CIRCLE_SHA1} registry.heroku.com/${PROJECT_NAME}/web:latest
+              docker push registry.heroku.com/${PROJECT_NAME}/web:latest
+            fi

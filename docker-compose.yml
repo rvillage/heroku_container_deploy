@@ -15,7 +15,7 @@ services:
   web:
     image: rvillage/rails5:0.0.1
     environment:
-      DATABASE_URL: postgres://postgres:password@postgres
+      DATABASE_URL: postgres://postgres:password@postgres/app_dev
     ports:
       - '3000:3000'
     networks:
@@ -25,7 +25,7 @@ services:
     volumes:
       - .:/usr/src/app
       - bundle_data:/usr/local/bundle
-    command: ["bundle", "exec", "rails", "s"]
+    command: ["rails", "s", "-b", "0.0.0.0"]
 
   postgres-gui:
     image: rvillage/pgweb-alpine
