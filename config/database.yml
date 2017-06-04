@@ -1,0 +1,16 @@
+default: &default
+  url:      <%= ENV.fetch('DATABASE_URL') { 'postgres://myuser:mypass@localhost/somedatabase' } %>
+  pool:     <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  encoding: utf-8
+
+development:
+  <<: *default
+  database: app_dev
+
+test:
+  <<: *default
+  database: app_test
+
+production:
+  <<: *default
+  database: app_production
